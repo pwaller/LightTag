@@ -78,7 +78,7 @@ script
     
     function animate() {
       renderer.render(scene, camera);
-      //requestAnimationFrame(animate);
+      requestAnimationFrame(animate);
     }
     
     animate();
@@ -150,7 +150,6 @@ script
       window.setTimeout(evolve_shells, 1);
       for (i in shells)
         shells[i].evolve();
-      animate();
       prune_dead_shells();
     }
     evolve_shells();
@@ -161,7 +160,6 @@ script
         data = [e.offsetX, e.offsetY];
         me.move(data);
         socket.emit("move", data);
-        animate();
         shells.push(new Shell(e.offsetX, e.offsetY));
       })
       .click(function (e) {
@@ -174,7 +172,6 @@ script
     socket.on('position update', function (who, where) {
       player = players[who];
       player.move(where);
-      animate();
     });
         
     socket.on('connected players', function (data) {
