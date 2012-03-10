@@ -46,11 +46,16 @@ script
       $(this).parents("li").addClass("selected");
     });
     
+    $("input,button", this).prop("disabled", false);
+    
     $("#form").submit(function (e) {
       e.preventDefault();
+      $("#form").off("submit");
+      // Prevent duplicate submission:
+      $("input,button", this).prop("disabled", true);
+      //$("#form").prop("disabled", true);
+      
       var name = $("#name").val();
-      //pdom = $("div");
-      //pdom.text("test " + name);
       $("#players").append(
         $("<div>").addClass("alert alert-info")
           .append($("<div>").text("Le " + name))
