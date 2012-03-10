@@ -116,31 +116,7 @@ script
     var players = {};
     
     var mycolor = parseInt($("input[name=color]:checked").val(), 16);
-    
-    function Player(id) {
-      this.id = id;
-      this.x = 0;
-      this.y = 0;
-      
-      var sphereMaterial = new THREE.MeshLambertMaterial({color: mycolor});
-      var sphere = new THREE.Mesh(new THREE.SphereGeometry(10, 8, 8), sphereMaterial);
-
-      sphere.position.x = WIDTH / 2;
-      sphere.position.y = HEIGHT / 2;
-      sphere.position.z = 0;
-
-      this.move = function (data) {
-        sphere.position.x = data[0]; sphere.position.y = data[1];
-      };
-      
-      this.gone = function () {
-        scene.remove(sphere);
-      }
-      
-      scene.add(sphere);
-    }
-    
-    var me = new Player(0);
+    var me = new Player(scene, 0, mycolor);
     
     evolve_shells();
     
@@ -163,19 +139,19 @@ script
       player = players[who];
       player.move(where);
     });
-        
+      
+    function new_player(who) {
+        player = new Player(scene, who, 0xff0000);
+        players[player.id] = player;      
+    }
+    
     socket.on('connected players', function (data) {
       for (who in data) {
-        who = data[who];
-        player = new Player(who);
-        players[player.id] = player;
+        new_player(data[who])
       }
     });
     
-    socket.on('player connected', function (who) {
-      player = new Player(who);
-      players[player.id] = player;
-    });
+    socket.on('player connected', new_player);
     
     socket.on('player disconnected', function (who) {
       players[who].gone();
