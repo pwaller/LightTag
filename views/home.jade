@@ -123,7 +123,7 @@ script
       this.y = 0;
       
       var sphereMaterial = new THREE.MeshLambertMaterial({color: mycolor});
-      var sphere = new THREE.Mesh(new THREE.SphereGeometry(10, 32, 32), sphereMaterial);
+      var sphere = new THREE.Mesh(new THREE.SphereGeometry(10, 8, 8), sphereMaterial);
 
       sphere.position.x = WIDTH / 2;
       sphere.position.y = HEIGHT / 2;
@@ -159,7 +159,7 @@ script
         new THREE.LineBasicMaterial({color: mycolor, linewidth: 2, opacity:0.2}));
       parent.add( line );
         
-      line.position.set( x, y, 100 );
+      line.position.set( x, y, -100 );
       this.s = 1;
       this.expired = false;
       
@@ -169,7 +169,7 @@ script
       };
       
       this.evolve = function (elapsed) {
-        this.s += 0.01 * elapsed;
+        this.s += 0.02 * elapsed;
         this.line.scale.set(this.s, this.s, this.s);
         if (this.s * INITIAL_SHELL_RADIUS > DIAGONAL) {
           this.expire();
