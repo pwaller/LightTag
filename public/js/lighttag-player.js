@@ -4,13 +4,15 @@ function Player(scene, id, color) {
     this.id = id;
     this.color = color;
     this.scene = scene;
+    
+    this.shells = new Shells(this, scene);
 
     var sphere_material = new THREE.MeshLambertMaterial({color: color});
     var sphere = new THREE.Mesh(new THREE.SphereGeometry(10, 8, 8), sphere_material);
 
     scene.add(sphere);
     this.gone = function () {
-        scene.remove(sphere); 
+        scene.remove(sphere);
     }
 
     sphere.position.x = WIDTH / 2;
@@ -18,8 +20,12 @@ function Player(scene, id, color) {
     sphere.position.z = 0;
 
     this.move = function (data) {
-        sphere.position.x = data[0]; 
+        sphere.position.x = data[0];
         sphere.position.y = data[1];
+        this.shells.spawn(data[0], data[1]);
     };
-
+    
+    this.tick = function (elapsed) {
+        this.shells.evolve(elapsed);
+    }
 }

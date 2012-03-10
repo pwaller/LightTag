@@ -77,9 +77,6 @@ script
     DIAGONAL = Math.sqrt(Math.pow(WIDTH, 2) + Math.pow(HEIGHT, 2));
 
   function init_graphics() {  
-
-    // get the DOM element to attach to
-    // - assume we've got jQuery to hand
     var container = $('#container');
     
     var renderer = new THREE.WebGLRenderer();
@@ -111,12 +108,29 @@ script
     }
     
     animate();
-    evolve_shells();
     
     var players = {};
+    var last_update = 0; 
+
+    function tick_players() {
+      window.setTimeout(tick_players, 10);
+      
+      now = (new Date()).getTime();
+      elapsed = now - last_update;
+      if (last_update == 0) { 
+        last_update = now; 
+        return; 
+      }
+      last_update = now;
+      
+      for (i in players)
+        players[i].tick(elapsed);
+    }
+    tick_players();
     
     var mycolor = parseInt($("input[name=color]:checked").val(), 16);
     var me = new Player(scene, 0, mycolor);
+    players[0] = me;
     
     renderer_element
       .mousemove(function (e) {
