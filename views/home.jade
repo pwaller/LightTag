@@ -152,7 +152,7 @@ script
         shells.push(new Shell(data[0], data[1]));
       })
       .click(function (e) {
-        data = [e.pageX - e.which.offset().left, e.pageY - e.which.offset().top];
+        data = [e.pageX - renderer_element.offset().left, e.pageY - renderer_element.offset().top];
         shells.push(new Shell(data[0], data[1]));
       });
       
