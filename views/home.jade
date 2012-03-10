@@ -138,14 +138,13 @@ script
         parent.remove(line);
       };
       
-      this.evolve = function () {
-        this.s += 0.2;
+      this.evolve = function (elapsed) {
+        this.s += 0.01 * elapsed;
         this.line.scale.set(this.s, this.s, this.s);
         if (this.s * INITIAL_SHELL_RADIUS > DIAGONAL) {
           this.expire();
         }
       };
-      this.evolve();
     }
     
     
@@ -159,10 +158,17 @@ script
       update_nshells();
     }
     
+    var last_update = 0; 
+    
     function evolve_shells() {
-      window.setTimeout(evolve_shells, 1);
+      window.setTimeout(evolve_shells, 10);
+      now = (new Date()).getTime();
+      elapsed = now - last_update;
+      if (last_update == 0) { last_update = now; return; }
+      last_update = now;
+            
       for (i in shells)
-        shells[i].evolve();
+        shells[i].evolve(elapsed);
       prune_dead_shells();
     }
     
