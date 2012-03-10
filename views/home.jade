@@ -113,18 +113,17 @@ script
     var last_update = 0; 
 
     function tick_players() {
-      window.setTimeout(tick_players, 10);
       
       now = (new Date()).getTime();
       elapsed = now - last_update;
-      if (last_update == 0) { 
-        last_update = now; 
-        return; 
+      if (last_update != 0) {
+        for (i in players)
+          players[i].tick(elapsed);
       }
       last_update = now;
       
-      for (i in players)
-        players[i].tick(elapsed);
+      // TODO(pwaller): Put this at the beginning
+      window.setTimeout(tick_players, 10);
     }
     tick_players();
     
@@ -134,15 +133,17 @@ script
     
     renderer_element
       .mousemove(function (e) {
-        data = [e.pageX - renderer_element.offset().left, e.pageY - renderer_element.offset().top];
+        data = [e.pageX - renderer_element.offset().left, 
+                e.pageY - renderer_element.offset().top];
         me.move(data);
         socket.emit("move", data);
       })
       .click(function (e) {
-        data = [e.pageX - renderer_element.offset().left, e.pageY - renderer_element.offset().top];
+        data = [e.pageX - renderer_element.offset().left, 
+                e.pageY - renderer_element.offset().top];
       });
       
-    
+    // TODO(pwaller): Pick this up automatically :-/
     var socket = io.connect('http://192.168.0.7');
       
     function new_player(who) {
