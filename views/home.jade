@@ -1,0 +1,183 @@
+div.content
+  div.page-header
+    h1 #{title}
+      small 
+  
+  #welcome.container.row
+    h2 Welcome!
+    .span8
+      form#form.well.form-inline
+        label Who are you?
+        input#name(type="text", placeholder=".. I am bob")
+        //
+        button.btn(type="submit") Go!
+  
+  .container.row
+    #players.span2
+      //div.alert.alert-info
+        h4 a
+        .progress.progress-success
+          .bar(style="width: 50%")
+    .span8  
+      div#container(style='text-align: center;')// border: 2px solid red;')
+
+footer
+
+script
+  $(function () {
+    $("#name").focus();
+    $("#form").submit(function (e) {
+      e.preventDefault();
+      var name = $("#name").val();
+      //pdom = $("div");
+      //pdom.text("test " + name);
+      $("#players").append(
+        $("<div>").addClass("alert alert-info")
+          .append($("<div>").text("Le " + name))
+          .append($("<div>").addClass("progress progress-success")
+            .append($("<div>").addClass("bar").attr("style", "width: 20%")))
+          
+          );
+      $("#welcome").fadeOut();
+      init_graphics();
+      return false;
+    });
+  });
+  function init_graphics() {  
+    // set the scene size
+    var WIDTH = 640,
+      HEIGHT = 480;
+
+    // get the DOM element to attach to
+    // - assume we've got jQuery to hand
+    var container = $('#container');
+    console.log("Got container: ", container);
+    
+    var renderer = new THREE.WebGLRenderer();
+    var renderer_element = $(renderer.domElement);
+    //var renderer = new THREE.CanvasRenderer();
+    renderer.setSize(WIDTH, HEIGHT);
+
+    container.append(renderer.domElement);
+    renderer_element.attr("style", "display:inline; background: black; cursor:none;");
+    // border: 2px solid grey; margin: 0 auto");
+    
+    var camera = new THREE.OrthographicCamera(0, WIDTH, 0, HEIGHT, -100, 400);
+    var scene = new THREE.Scene();
+        
+    var pointLight = new THREE.PointLight(0xFFFFFF);
+    pointLight.position.x = WIDTH / 2;
+    pointLight.position.y = HEIGHT / 2;
+    pointLight.position.z = -130;
+    scene.add(pointLight);    
+    scene.add(new THREE.AmbientLight(0x000f00));
+    
+    parent = new THREE.Object3D();
+    scene.add(parent);
+    
+    function animate() {
+      renderer.render(scene, camera);
+      //requestAnimationFrame(animate);
+    }
+    
+    animate();
+    
+    var players = {};
+    
+    function Player(id) {
+      this.id = id;
+      this.x = 0;
+      this.y = 0;
+      
+      var sphereMaterial = new THREE.MeshLambertMaterial({color: 0xCC0000});
+      var sphere = new THREE.Mesh(new THREE.SphereGeometry(10, 32, 32), sphereMaterial);
+
+      sphere.position.x = WIDTH / 2;
+      sphere.position.y = HEIGHT / 2;
+      sphere.position.z = 0;
+
+      this.move = function (data) {
+        sphere.position.x = data[0]; sphere.position.y = data[1];
+      };
+      
+      this.gone = function () {
+        scene.remove(sphere);
+      }
+      
+      scene.add(sphere);
+    }
+    
+    var me = new Player(0);
+    
+    var shells = [];
+
+
+    var circleShape = new THREE.Shape();
+    circleShape.moveTo( 0, 0 );
+    circleShape.arc( 0, 0, 10, 0, Math.PI*2, false );
+    var circlePoints = circleShape.createPointsGeometry(50);
+        
+    function Shell(x, y) {
+      line = this.line = new THREE.Line(circlePoints, 
+        new THREE.LineBasicMaterial({color: 0xFFFFFF, linewidth: 2}));
+      parent.add( line );
+        
+      line.position.set( x, y, 100 );
+      this.s = 1;
+      
+      this.evolve = function () {
+        this.s += 0.2;
+        this.line.scale.set(this.s, this.s, this.s);
+      };
+      this.evolve();
+    }
+    
+    function evolve_shells() {
+      window.setTimeout(evolve_shells, 1);
+      for (i in shells)
+        shells[i].evolve();
+      animate();
+    }
+    evolve_shells();
+    
+    
+    renderer_element
+      .mousemove(function (e) {
+        data = [e.offsetX, e.offsetY];
+        me.move(data);
+        socket.emit("move", data);
+        animate();
+        shells.push(new Shell(e.offsetX, e.offsetY));
+      })
+      .click(function (e) {
+        shells.push(new Shell(e.offsetX, e.offsetY));
+      });
+      
+    
+    var socket = io.connect('http://192.168.0.7');
+    
+    socket.on('position update', function (who, where) {
+      player = players[who];
+      player.move(where);
+      animate();
+    });
+        
+    socket.on('connected players', function (data) {
+      for (who in data) {
+        who = data[who];
+        player = new Player(who);
+        players[player.id] = player;
+      }
+    });
+    
+    socket.on('player connected', function (who) {
+      player = new Player(who);
+      players[player.id] = player;
+    });
+    
+    socket.on('player disconnected', function (who) {
+      players[who].gone();
+      delete players[who];
+    });
+    
+  }
