@@ -64,8 +64,10 @@ script
     renderer_element.attr("style", "display:inline; background: black; cursor:none;");
     // border: 2px solid grey; margin: 0 auto");
     
-    var camera = new THREE.OrthographicCamera(0, WIDTH, 0, HEIGHT, -100, 400);
     var scene = new THREE.Scene();
+    
+    var camera = new THREE.OrthographicCamera(0, WIDTH, 0, HEIGHT, -100, 400);
+    scene.add(camera);
         
     var pointLight = new THREE.PointLight(0xFFFFFF);
     pointLight.position.x = WIDTH / 2;
