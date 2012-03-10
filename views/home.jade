@@ -63,9 +63,11 @@ script
             .append($("<div>").addClass("bar").attr("style", "width: 20%")))
           
           );
+          
       $("#welcome").fadeOut();
-      init_graphics();
-      return false;
+      
+      canvas_element = init_graphics();
+      canvas_element.hide().delay(500).fadeIn();
     });
   });
   function init_graphics() {  
@@ -77,14 +79,15 @@ script
     // get the DOM element to attach to
     // - assume we've got jQuery to hand
     var container = $('#container');
-    console.log("Got container: ", container);
     
     var renderer = new THREE.WebGLRenderer();
-    var renderer_element = $(renderer.domElement);
+    // TODO(pwaller): Implement fallback, use less points on shells
     //var renderer = new THREE.CanvasRenderer();
+    var renderer_element = $(renderer.domElement);
     renderer.setSize(WIDTH, HEIGHT);
 
     container.append(renderer.domElement);
+    renderer.domElement.onselectstart = function () { return false; }
     renderer_element.attr("style", "display:inline; background: black; cursor:none;");
     // border: 2px solid grey; margin: 0 auto");
     
@@ -238,4 +241,5 @@ script
       delete players[who];
     });
     
+    return renderer_element;
   }
