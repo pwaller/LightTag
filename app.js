@@ -40,6 +40,13 @@ app.configure(function () {
 
     app.get('/', function (req, res) {
         res.local("title", "Light Speed Tag");
+        res.local("colors", [
+            "E802B4",
+            "529836",
+            "BFC7D7",
+            "EC880F",
+            "CCC8FC",
+        ]);
         res.render("home");
     });
 

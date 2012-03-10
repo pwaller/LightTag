@@ -8,6 +8,62 @@ html
     title= title
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
     
+    style(type="text/css")
+      .form-inline .row label,input {
+        margin: 0 0.2em;
+      }
+      ul.color-chooser {
+        margin: 8px 0;
+        height: 22px;
+        display: inline-block;
+      }
+      ul.color-chooser label {
+        margin: 0;
+        display: block;
+        height: 22px;
+        text-indent: -9999px;
+        cursor: pointer;
+      }
+      ul.color-chooser li:first-child {
+        width: 29px;
+        margin-left: 0;
+        border-top-left-radius: 3px;
+        border-bottom-left-radius: 3px;
+      }
+      ul.color-chooser li:last-child {
+        width: 28px;
+        border-top-right-radius: 3px;
+        border-bottom-right-radius: 3px;
+      }
+      ul.color-chooser li {
+        list-style-type: none;
+        margin: 0 0 0 1px;
+        float: left;
+        width: 26px;
+        height: 22px;
+        opacity: .7;
+        filter: alpha(opacity=70);
+      }
+      .selected {
+        border: 1px dashed black;
+        height: 20px !important;
+      }
+      .labelstyle-E802B4 {
+        background: #E802B4;
+        filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#e802b4', endColorstr='#b901d9');
+        background: -webkit-gradient(linear, left top, left bottom, from(#E802B4), to(#B901D9));
+        background: -moz-linear-gradient(top, #E802B4, #B901D9);
+        color: white;
+        text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.2);
+      }
+    each color in colors
+      style
+        .labelstyle-#{color} {
+          background: ##{color};
+          color: white;
+          text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.2);
+        }
+    
     script(src='/js/jquery-1.7.1.js')
     script(src='/socket.io/socket.io.js')
     script(src='/js/Three.js')

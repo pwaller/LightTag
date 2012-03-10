@@ -6,11 +6,21 @@ div.content
   #welcome.container.row
     h2 Welcome!
     .span8
-      form#form.well.form-inline
-        label Who are you?
-        input#name(type="text", placeholder=".. I am bob")
-        //
-        button.btn(type="submit") Go!
+      form#form.well.form-inline(onsubmit="return false;")
+        .row
+          .span2
+            label Who are you?
+          .span4
+            input#name(type="text", placeholder=".. I am bob")
+            //
+            button.btn(type="submit") Go!
+        .row
+          .offset2.span4
+            ul.color-chooser
+              each color in colors
+                li.color(class="labelstyle-#{color}")
+                  label
+                    input(name="color", type="radio", value="#{color}")
   
   .container.row
     #ncirc 0
@@ -27,6 +37,15 @@ footer
 script
   $(function () {
     $("#name").focus();
+    
+    $("#form input[name=color]:first").prop("checked", true).parents("li").addClass("selected");
+    
+    $(".color-chooser input").click(function () {
+      console.log("Clicked! ", $(this).val());
+      $(".color-chooser li").removeClass("selected");
+      $(this).parents("li").addClass("selected");
+    });
+    
     $("#form").submit(function (e) {
       e.preventDefault();
       var name = $("#name").val();
@@ -88,12 +107,14 @@ script
     
     var players = {};
     
+    var mycolor = parseInt($("input[name=color]:checked").val(), 16);
+    
     function Player(id) {
       this.id = id;
       this.x = 0;
       this.y = 0;
       
-      var sphereMaterial = new THREE.MeshLambertMaterial({color: 0xCC0000});
+      var sphereMaterial = new THREE.MeshLambertMaterial({color: mycolor});
       var sphere = new THREE.Mesh(new THREE.SphereGeometry(10, 32, 32), sphereMaterial);
 
       sphere.position.x = WIDTH / 2;
@@ -125,8 +146,9 @@ script
     function update_nshells() { $("#ncirc").text(shells.length); }
     function Shell(x, y) {
       update_nshells();
-      line = this.line = new THREE.Line(circlePoints, 
-        new THREE.LineBasicMaterial({color: 0xFFFFFF, linewidth: 2}));
+      
+      var line = this.line = new THREE.Line(circlePoints, 
+        new THREE.LineBasicMaterial({color: mycolor, linewidth: 2, opacity:0.2}));
       parent.add( line );
         
       line.position.set( x, y, 100 );
