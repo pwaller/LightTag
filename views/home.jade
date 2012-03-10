@@ -206,13 +206,14 @@ script
     
     renderer_element
       .mousemove(function (e) {
-        data = [e.offsetX, e.offsetY];
+        data = [e.pageX - renderer_element.offset().left, e.pageY - renderer_element.offset().top];
         me.move(data);
         socket.emit("move", data);
-        shells.push(new Shell(e.offsetX, e.offsetY));
+        shells.push(new Shell(data[0], data[1]));
       })
       .click(function (e) {
-        shells.push(new Shell(e.offsetX, e.offsetY));
+        data = [e.pageX - e.which.offset().left, e.pageY - e.which.offset().top];
+        shells.push(new Shell(data[0], data[1]));
       });
       
     
