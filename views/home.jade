@@ -13,6 +13,7 @@ div.content
         button.btn(type="submit") Go!
   
   .container.row
+    #ncirc 0
     #players.span2
       //div.alert.alert-info
         h4 a
@@ -117,7 +118,9 @@ script
     circleShape.arc( 0, 0, 10, 0, Math.PI*2, false );
     var circlePoints = circleShape.createPointsGeometry(50);
         
+    function update_nshells() { $("#ncirc").text(shells.length); }
     function Shell(x, y) {
+      update_nshells();
       line = this.line = new THREE.Line(circlePoints, 
         new THREE.LineBasicMaterial({color: 0xFFFFFF, linewidth: 2}));
       parent.add( line );
@@ -132,11 +135,23 @@ script
       this.evolve();
     }
     
+    
+    function prune_dead_shells() {
+      not_expired = []
+      for (i in shells)
+        if (!shells[i].expired)
+          not_expired.push(shells[i])
+      if (not_expired.length != shells.length)
+        shells = not_expired;
+      update_nshells();
+    }
+    
     function evolve_shells() {
       window.setTimeout(evolve_shells, 1);
       for (i in shells)
         shells[i].evolve();
       animate();
+      prune_dead_shells();
     }
     evolve_shells();
     
