@@ -70,10 +70,12 @@ script
       canvas_element.hide().delay(500).fadeIn();
     });
   });
+  
   // set the scene size
   var WIDTH = 640,
     HEIGHT = 480,
     DIAGONAL = Math.sqrt(Math.pow(WIDTH, 2) + Math.pow(HEIGHT, 2));
+
   function init_graphics() {  
 
     // get the DOM element to attach to
@@ -102,48 +104,39 @@ script
     pointLight.position.z = -130;
     scene.add(pointLight);    
     scene.add(new THREE.AmbientLight(0x000f00));
-    
-    parent = new THREE.Object3D();
-    scene.add(parent);
-    
+        
     function animate() {
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
     }
     
     animate();
+    evolve_shells();
     
     var players = {};
     
     var mycolor = parseInt($("input[name=color]:checked").val(), 16);
     var me = new Player(scene, 0, mycolor);
     
-    evolve_shells();
-    
     renderer_element
       .mousemove(function (e) {
         data = [e.pageX - renderer_element.offset().left, e.pageY - renderer_element.offset().top];
         me.move(data);
         socket.emit("move", data);
-        shells.push(new Shell(data[0], data[1]));
       })
       .click(function (e) {
         data = [e.pageX - renderer_element.offset().left, e.pageY - renderer_element.offset().top];
-        shells.push(new Shell(data[0], data[1]));
       });
       
     
     var socket = io.connect('http://192.168.0.7');
-    
-    socket.on('position update', function (who, where) {
-      player = players[who];
-      player.move(where);
-    });
       
     function new_player(who) {
         player = new Player(scene, who, 0xff0000);
         players[player.id] = player;      
     }
+    
+    socket.on('player connected', new_player);
     
     socket.on('connected players', function (data) {
       for (who in data) {
@@ -151,7 +144,10 @@ script
       }
     });
     
-    socket.on('player connected', new_player);
+    socket.on('position update', function (who, where) {
+      player = players[who];
+      player.move(where);
+    });
     
     socket.on('player disconnected', function (who) {
       players[who].gone();

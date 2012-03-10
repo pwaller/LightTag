@@ -9,16 +9,15 @@ circleShape.arc( 0, 0, INITIAL_SHELL_RADIUS, 0, Math.PI*2, false );
 var circlePoints = circleShape.createPointsGeometry(50);
     
 function update_nshells() { $("#ncirc").text(shells.length); }
-function Shell(x, y) {
+
+function Shell(color, x, y) {
   update_nshells();
-  
-  var mycolor = parseInt($("input[name=color]:checked").val(), 16);
-  
-  var line = this.line = new THREE.Line(circlePoints, 
-    new THREE.LineBasicMaterial({color: mycolor, linewidth: 2, opacity:0.2}));
-  parent.add( line );
     
-  line.position.set( x, y, -100 );
+  var line = this.line = new THREE.Line(circlePoints, 
+    new THREE.LineBasicMaterial({color: color, linewidth: 2, opacity:0.2}));
+  parent.add(line);
+    
+  line.position.set(x, y, -100);
   this.s = 1;
   this.expired = false;
   
