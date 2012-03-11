@@ -75,5 +75,8 @@ script
       
       var client = new Client(graphics);
     });
+    
+    if (getQueryString()["go"])
+      $("#form").submit();
   });
 
