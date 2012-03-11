@@ -1,3 +1,21 @@
+function getQueryString() {
+  var result = {}, queryString = location.search.substring(1),
+      re = /([^&=]+)=([^&]*)/g, m;
+
+  while (m = re.exec(queryString)) {
+    result[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+  }
+
+  return result;
+}
+
+var debug = getQueryString()["debug"];
+var reload = getQueryString()["reload"];
+var testmass = getQueryString()["testmass"];
+
+//var myParam = getQueryString()["myParam"];
+
+
 function Client(graphics) {
     var scene = graphics.scene,
         renderer_element = graphics.renderer_element;
@@ -13,6 +31,19 @@ function Client(graphics) {
     var me = new_player(0, mycolor);
     //players[0] = me;
     
+    if (testmass) {
+        var fake_player = new_player(1, 0x00FF22);
+        fake_player.move([200, 200]);
+        
+        var t = 0;
+        
+        function wobble() {
+            t++;
+            fake_player.move([300 + 100 * Math.sin(t / 20), 200+ 100 * Math.cos(t / 20)]);
+            window.setTimeout(wobble, 15);
+        }
+        wobble();
+    }
     
     var last_update = 0;
     function tick_players() {
@@ -60,6 +91,14 @@ function Client(graphics) {
     socket.on('player disconnected', function (who) {
         players[who].gone();
         delete players[who];
+    });
+    
+    socket.on('disconnect', function () {
+        if (reload) {
+            window.setTimeout(function () {
+                window.location.reload();
+            }, 1000);
+        }
     });
 
 }
