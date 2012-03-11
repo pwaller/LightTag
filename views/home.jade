@@ -86,6 +86,11 @@ script
     renderer.setSize(WIDTH, HEIGHT);
 
     container.append(renderer.domElement);
+    var stats = new Stats();
+    stats.domElement.style.position = 'relative';
+    stats.domElement.style.top = '-530px';
+    container.append(stats.domElement);
+
     renderer.domElement.onselectstart = function () { return false; }
     renderer_element.attr("style", "display:inline; background: black; cursor:none;");
     // border: 2px solid grey; margin: 0 auto");
@@ -104,6 +109,7 @@ script
         
     function animate() {
       renderer.render(scene, camera);
+      stats.update();
       requestAnimationFrame(animate);
     }
     
