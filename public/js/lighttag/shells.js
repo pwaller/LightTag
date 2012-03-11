@@ -12,7 +12,6 @@ circle_shape.arc(0, 0, INITIAL_SHELL_RADIUS, 0, Math.PI*2, false);
 
 
 var sphere_material = new THREE.MeshLambertMaterial({color: 0xFFFFFF});
-var sphere = new THREE.Mesh(new THREE.SphereGeometry(10, 8, 8), sphere_material);
 
 var circle_points = circle_shape.createPointsGeometry(N_CIRCLE_POINTS);
 
@@ -24,7 +23,14 @@ function Shell(shell_container, color, x, y) {
     line.position.set(x, y, -100);
     var s = 1;
     this.expired = false;
-    
+
+    var sphere = new THREE.Mesh(new THREE.SphereGeometry(10, 8, 8), sphere_material);
+    sphere.position.set(x, y, -100);
+    var show_sphere = false;
+
+    this.view_x = 50;
+    this.view_y = 50;
+
     function radius() {
         return s * INITIAL_SHELL_RADIUS;
     }
@@ -32,14 +38,23 @@ function Shell(shell_container, color, x, y) {
     this.expire = function () {
         this.expired = true;
         shell_container.remove(line);
+        if (show_sphere)
+            shell_container.remove(sphere);
     };
 
     this.evolve = function (elapsed) {
-        s += 0.02 * elapsed;
+        delta = 0.02 * elapsed;
+        s += delta;
         this.line.scale.set(s, s, s);
         // TODO(pwaller): precompute shell termination length == longest path to corner
         if (radius() > DIAGONAL)
             this.expire();
+        d = this.distance(this.view_x, this.view_y);
+        if (-delta < d && d < delta) {
+            this.sphere_on();
+        } else {
+            this.sphere_off();
+        }
     };
     
     // Gives the distance from the edge of the shell to (testx, testy).
@@ -49,7 +64,6 @@ function Shell(shell_container, color, x, y) {
     };
     
     this.highlight = function () {
-        sphere.position.x = x; sphere.position.y = y;
         material.opacity = 1;
         material.linewidth = 5;
     };
@@ -58,13 +72,25 @@ function Shell(shell_container, color, x, y) {
         material.opacity = 0.2;
         material.linewidth = 1;
     };
+
+    this.sphere_on = function() {
+        if (!show_sphere) {
+            show_sphere = true;
+            shell_container.add(sphere);
+        }
+    };
+
+    this.sphere_off = function() {
+        if (show_sphere) {
+            show_sphere = false;
+            shell_container.remove(sphere);
+        }
+    }
 }
 
 function Shells(player, scene) {
     this.player = player;
     this.scene = scene;
-    
-    scene.add(sphere);
     
     shell_container = new THREE.Object3D();
     scene.add(shell_container);
