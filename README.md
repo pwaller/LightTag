@@ -12,6 +12,7 @@ Getting started
 4) Run LightTag: "node_modules/.bin/supervisor app.js"
 
 Copyable:
+
     git clone https://pwaller@github.com/pwaller/LightTag.git
     cd LightTag
     npm install express socket.io jade supervisor
