@@ -5,6 +5,8 @@ function hypot(a, b) {
 
 var INITIAL_SHELL_RADIUS = 10;
 var N_CIRCLE_POINTS = 50;
+var LIGHTSPEED = 0.1;
+var Infinity = parseFloat("Infinity");
 
 var circle_shape = new THREE.Shape();
 circle_shape.moveTo(0, 0);
@@ -15,14 +17,14 @@ var sphere_material = new THREE.MeshLambertMaterial({color: 0xFFFFFF});
 
 var circle_points = circle_shape.createPointsGeometry(N_CIRCLE_POINTS);
 
-function Shell(shell_container, color, x, y) {
+function Shell(shell_container, color, x, y, t) {
     var material = new THREE.LineBasicMaterial({color: color, linewidth: 1, opacity: 0.2})
     var line = this.line = new THREE.Line(circle_points, material);
     shell_container.add(line);
 
     line.position.set(x, y, -100);
-    var s = 1;
     this.expired = false;
+    this.time = t;
 
     var sphere = new THREE.Mesh(new THREE.SphereGeometry(10, 8, 8), sphere_material);
     sphere.position.set(x, y, -100);
@@ -31,8 +33,8 @@ function Shell(shell_container, color, x, y) {
     this.view_x = 50;
     this.view_y = 50;
 
-    function radius() {
-        return s * INITIAL_SHELL_RADIUS;
+    function radius(time) {
+        return (time - t) * LIGHTSPEED;
     }
 
     this.expire = function () {
@@ -42,15 +44,22 @@ function Shell(shell_container, color, x, y) {
             shell_container.remove(sphere);
     };
 
-    this.evolve = function (elapsed) {
-        delta = 0.02 * elapsed;
-        s += delta;
+    this.update = function (elapsed_time, end_time) {
+        s = radius(elapsed_time);
         this.line.scale.set(s, s, s);
+
         // TODO(pwaller): precompute shell termination length == longest path to corner
-        if (radius() > DIAGONAL)
+        if (s > DIAGONAL)
             this.expire();
-        d = this.distance(this.view_x, this.view_y);
-        if (-delta < d && d < delta) {
+        
+        d = this.distance(this.view_x, this.view_y, elapsed_time);
+        if (end_time) {
+            delta = s - radius(elapsed_time + end_time - this.time); // this is negative
+        } else {
+            delta = -Infinity;
+        }
+
+        if (delta < d && d < 0) {
             this.sphere_on();
         } else {
             this.sphere_off();
@@ -59,8 +68,8 @@ function Shell(shell_container, color, x, y) {
     
     // Gives the distance from the edge of the shell to (testx, testy).
     // Negative means we're inside the shell
-    this.distance = function (testx, testy) {
-        return hypot(testx - x, testy - y) - radius();
+    this.distance = function (testx, testy, time) {
+        return hypot(testx - x, testy - y) - radius(time);
     };
     
     this.highlight = function () {
@@ -91,6 +100,7 @@ function Shell(shell_container, color, x, y) {
 function Shells(player, scene) {
     this.player = player;
     this.scene = scene;
+    this.elapsed_time = 0.0;
     
     shell_container = new THREE.Object3D();
     scene.add(shell_container);
@@ -107,14 +117,20 @@ function Shells(player, scene) {
     };
     
     this.evolve = function (elapsed) {
-        for (i in shells)
-            shells[i].evolve(elapsed);
+        this.elapsed_time += elapsed
+        for (var i=0, len=shells.length; i < len; i++) {
+            if (i < len-1) {
+                shells[i].update(this.elapsed_time, shells[i+1].time);
+            } else {
+                shells[i].update(this.elapsed_time);
+            }
+        }
         prune_dead_shells();
     };
     
     this.spawn = function (x, y) {
         //if (shells.length != 0) return;
-        shells.push(new Shell(shell_container, player.color, x, y));
+        shells.push(new Shell(shell_container, player.color, x, y, this.elapsed_time));
     };
     
     this.gone = function () {
