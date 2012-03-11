@@ -11,6 +11,10 @@ Getting started
 
 4) Run LightTag: "node_modules/.bin/supervisor app.js"
 
+    Alternatively, to automatically refresh the page when code is changed:
+        node_modules/.bin/supervisor --watch "js|jade" app.js
+        append ?go=1&debug=1
+    
 Copyable:
 
     git clone https://pwaller@github.com/pwaller/LightTag.git
