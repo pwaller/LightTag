@@ -104,7 +104,7 @@ function Shells(player, scene) {
         if (shells.length == 0) return;
         var shells_copy = shells.slice(0);
         for (i in shells_copy)
-            shells_copy[i] = [shells_copy[i].distance(x, y), shells_copy[i]];
+            shells_copy[i] = [Math.abs(shells_copy[i].distance(x, y)), shells_copy[i]];
         
         shells_copy.sort(function (l, r) { return l[0] > r [0]; });
         //console.log(shells_copy[0][0], shells_copy[shells_copy.length - 1][0]);
