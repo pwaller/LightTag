@@ -10,6 +10,8 @@ function getQueryString() {
 }
 
 var debug = getQueryString()["debug"];
+var reload = getQueryString()["reload"];
+var testmass = getQueryString()["testmass"];
 
 //var myParam = getQueryString()["myParam"];
 
@@ -29,7 +31,7 @@ function Client(graphics) {
     var me = new_player(0, mycolor);
     //players[0] = me;
     
-    if (debug) {
+    if (testmass) {
         var fake_player = new_player(1, 0x00FF22);
         fake_player.move([200, 200]);
         
@@ -92,7 +94,7 @@ function Client(graphics) {
     });
     
     socket.on('disconnect', function () {
-        if (debug) {
+        if (reload) {
             window.setTimeout(function () {
                 window.location.reload();
             }, 1000);
