@@ -3,7 +3,7 @@ function hypot(a, b) {
     return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
 }
 
-var INITIAL_SHELL_RADIUS = 10;
+var INITIAL_SHELL_RADIUS = 1;
 var N_CIRCLE_POINTS = 50;
 var LIGHTSPEED = 0.1;
 var Infinity = parseFloat("Infinity");
