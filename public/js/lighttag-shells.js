@@ -42,7 +42,8 @@ function Shell(shell_container, color, x, y) {
             this.expire();
     };
     
-    // Gives the distance from the edge of the shell
+    // Gives the distance from the edge of the shell to (testx, testy).
+    // Negative means we're inside the shell
     this.distance = function (testx, testy) {
         return hypot(testx - x, testy - y) - radius();
     };
@@ -106,7 +107,7 @@ function Shells(player, scene) {
             shells_copy[i] = [shells_copy[i].distance(x, y), shells_copy[i]];
         
         shells_copy.sort(function (l, r) { return l[0] > r [0]; });
-        console.log(shells_copy[0][0], shells_copy[shells_copy.length - 1][0]);
+        //console.log(shells_copy[0][0], shells_copy[shells_copy.length - 1][0]);
         closest_shell = shells_copy[0][1];
         if (this.highlighted != closest_shell) {
             if (this.highlighted)
