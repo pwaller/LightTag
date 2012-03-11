@@ -59,7 +59,7 @@ app.configure(function () {
         
         var player = new Player(socket);
         players[player.id] = player;
-        socket.broadcast.emit("player connected", player.id);
+        socket.broadcast.emit("player connected", player.id, 0xff0000);
                 
         socket.on('move', function(data) {
             player.move(data);
