@@ -72,8 +72,7 @@ function Client(graphics) {
                     e.pageY - renderer_element.offset().top];
         });
 
-    // TODO(pwaller): Pick this up automatically :-/
-    var socket = io.connect('http://192.168.0.7');
+    var socket = io.connect('http://' + window.document.domain);
 
     socket.on('player connected', new_player);
 
