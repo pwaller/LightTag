@@ -3,9 +3,9 @@ function hypot(a, b) {
     return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
 }
 
-var INITIAL_SHELL_RADIUS = 1;
+var INITIAL_SHELL_RADIUS = 10;
 var N_CIRCLE_POINTS = 50;
-var LIGHTSPEED = 0.1;
+var LIGHTSPEED = 0.2;
 var Infinity = parseFloat("Infinity");
 
 var circle_shape = new THREE.Shape();
@@ -44,22 +44,19 @@ function Shell(shell_container, color, x, y, t) {
             shell_container.remove(sphere);
     };
 
-    this.update = function (elapsed_time, end_time) {
-        s = radius(elapsed_time);
+    this.update = function (elapsed_time, next_shell) {
+        r = radius(elapsed_time);
+        s = r/INITIAL_SHELL_RADIUS;
         this.line.scale.set(s, s, s);
 
-        // TODO(pwaller): precompute shell termination length == longest path to corner
-        if (s > DIAGONAL)
-            this.expire();
-        
-        d = this.distance(this.view_x, this.view_y, elapsed_time);
-        if (end_time) {
-            delta = s - radius(elapsed_time + end_time - this.time); // this is negative
-        } else {
-            delta = -Infinity;
-        }
+        has_arrived = (this.distance(this.view_x, this.view_y, elapsed_time) < 0);
+        is_obsolete = (next_shell && (next_shell.distance(this.view_x, this.view_y, elapsed_time) < 0));
 
-        if (delta < d && d < 0) {
+        // TODO(pwaller): precompute shell termination length == longest path to corner
+        if (is_obsolete && r > DIAGONAL)
+            this.expire();
+
+        if (has_arrived && !is_obsolete) {
             this.sphere_on();
         } else {
             this.sphere_off();
@@ -120,7 +117,7 @@ function Shells(player, scene) {
         this.elapsed_time += elapsed
         for (var i=0, len=shells.length; i < len; i++) {
             if (i < len-1) {
-                shells[i].update(this.elapsed_time, shells[i+1].time);
+                shells[i].update(this.elapsed_time, shells[i+1]);
             } else {
                 shells[i].update(this.elapsed_time);
             }
