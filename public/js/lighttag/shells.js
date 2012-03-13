@@ -21,7 +21,9 @@ var circle_points = circle_shape.createPointsGeometry(N_CIRCLE_POINTS);
 function Shell(shell_container, color, x, y, t) {
     var material = new THREE.LineBasicMaterial({color: color, linewidth: 1, opacity: 0.2})
     var line = this.line = new THREE.Line(circle_points, material);
-    shell_container.add(line);
+    
+    if (!options.hide_cones)
+        shell_container.add(line);
 
     line.position.set(x, y, -100);
     this.expired = false;
