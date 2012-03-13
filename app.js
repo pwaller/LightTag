@@ -25,6 +25,7 @@ app.configure(function () {
     
     var players = {};
     
+    // TODO(pwaller): Serialization of player name and colour.
     function Player(socket) {
         this.id = socket.id;
         this.socket = socket;

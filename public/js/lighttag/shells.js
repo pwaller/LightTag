@@ -42,15 +42,17 @@ function Shell(shell_container, color, x, y, t) {
     this.expire = function () {
         this.expired = true;
         shell_container.remove(line);
-        if (show_sphere)
-            shell_container.remove(sphere);
+        this.sphere_off();
     };
-
+    
     this.update = function (elapsed_time, next_shell) {
         r = radius(elapsed_time);
         s = r/INITIAL_SHELL_RADIUS;
         this.line.scale.set(s, s, s);
 
+        // TODO(pwaller): This needs to become part of an "observe" process.
+        //                for a given set of light cones we may want to observe
+        //                from multiple points.
         this_distance = this.distance(this.view_x, this.view_y, elapsed_time);
         has_arrived = (this_distance < 0);
         if (!next_shell) {

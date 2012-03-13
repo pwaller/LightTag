@@ -2,10 +2,16 @@ function Graphics() {
     var container = $('#container');
 
     var renderer = new THREE.WebGLRenderer();
-    // TODO(pwaller): Implement fallback, use less points on shells
-    //var renderer = new THREE.CanvasRenderer();
+    
+    // TODO(pwaller): Show message of some sort if webgl fails
+    // TODO(pwaller): Implement canvas fallback, use less points on shells
+    //                 Maybe just have to render fewer shells.. 
+    //                 What doesn't help: Disabling lighting
+    // var renderer = new THREE.CanvasRenderer();
+    
     this.renderer_element = $(renderer.domElement);
     renderer.setSize(WIDTH, HEIGHT);
+    renderer.sortObjects = false;
 
     container.append(renderer.domElement);
     var stats = new Stats();

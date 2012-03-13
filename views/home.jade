@@ -41,6 +41,9 @@ script
     DIAGONAL = Math.sqrt(Math.pow(WIDTH, 2) + Math.pow(HEIGHT, 2));
     
   $(function () {
+    // TODO(pwaller): Choose initial colour at random
+    // TODO(pwaller): Remember name and colour selections
+  
     $("#name").focus();
     
     $("#form input[name=color]:first").prop("checked", true).parents("li").addClass("selected");
