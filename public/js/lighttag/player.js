@@ -6,6 +6,7 @@ function Player(scene, id, name, color) {
     this.color = color;
     
     var shells = new Shells(this, scene);
+    this.shells = shells;
 
     var sphere_material = new THREE.MeshLambertMaterial({color: color});
     var sphere = new THREE.Mesh(new THREE.SphereGeometry(10, 8, 8), sphere_material);

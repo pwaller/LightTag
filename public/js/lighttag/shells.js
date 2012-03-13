@@ -119,37 +119,38 @@ function Shells(player, scene) {
     shell_container = new THREE.Object3D();
     scene.add(shell_container);
             
-    var shells = [];
+    //var shells = [];
+    this.shells = []; //shells;
     
-    function prune_dead_shells () {
+    this.prune_dead_shells = function () {
         not_expired = []
-        for (i in shells)
-            if (!shells[i].expired)
-                not_expired.push(shells[i])
-        if (not_expired.length != shells.length)
-            shells = not_expired;
+        for (i in this.shells)
+            if (!this.shells[i].expired)
+                not_expired.push(this.shells[i])
+        if (not_expired.length != this.shells.length)
+            this.shells = not_expired;
     };
     
     this.evolve = function (elapsed) {
         this.elapsed_time += elapsed
-        for (var i=0, len=shells.length; i < len; i++) {
+        for (var i=0, len=this.shells.length; i < len; i++) {
             if (i < len-1) {
-                shells[i].update(this.elapsed_time, shells[i+1]);
+                this.shells[i].update(this.elapsed_time, this.shells[i+1]);
             } else {
-                shells[i].update(this.elapsed_time);
+                this.shells[i].update(this.elapsed_time);
             }
         }
-        prune_dead_shells();
+        this.prune_dead_shells();
     };
     
     this.spawn = function (x, y) {
         //if (shells.length != 0) return;
-        shells.push(new Shell(shell_container, player.color, x, y, this.elapsed_time));
+        this.shells.push(new Shell(id++, shell_container, player.color, x, y, this.elapsed_time));
     };
     
     this.gone = function () {
-        for (i in shells)
-            shells[i].expire();
+        for (i in this.shells)
+            this.shells[i].expire();
         scene.remove(shell_container);
     };
     
@@ -157,8 +158,8 @@ function Shells(player, scene) {
     this.highlighted = null;
     
     this.highlight_closest = function (x, y) {
-        if (shells.length == 0) return;
-        var shells_copy = shells.slice(0);
+        if (this.shells.length == 0) return;
+        var shells_copy = this.shells.slice(0);
         for (i in shells_copy)
             shells_copy[i] = [Math.abs(shells_copy[i].distance(x, y)), shells_copy[i]];
         
