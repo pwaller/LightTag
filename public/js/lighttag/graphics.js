@@ -1,13 +1,15 @@
 function Graphics() {
     var container = $('#container');
-
-    var renderer = new THREE.WebGLRenderer();
     
     // TODO(pwaller): Show message of some sort if webgl fails
     // TODO(pwaller): Implement canvas fallback, use less points on shells
     //                 Maybe just have to render fewer shells.. 
     //                 What doesn't help: Disabling lighting
-    // var renderer = new THREE.CanvasRenderer();
+    if (options.usecanvas) {
+        var renderer = new THREE.CanvasRenderer();
+    } else {
+        var renderer = new THREE.WebGLRenderer();
+    }
     
     this.renderer_element = $(renderer.domElement);
     renderer.setSize(WIDTH, HEIGHT);
