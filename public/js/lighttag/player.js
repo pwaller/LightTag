@@ -13,9 +13,10 @@ function Player(scene, id, name, color) {
 
     scene.add(sphere);
     this.gone = function () {
+        console.log("Player gone: ", this);
         scene.remove(sphere);
         shells.gone();
-    }
+    };
 
     sphere.position.x = WIDTH / 2;
     sphere.position.y = HEIGHT / 2;
@@ -29,6 +30,6 @@ function Player(scene, id, name, color) {
     
     this.tick = function (elapsed) {
         shells.evolve(elapsed);
-        shells.highlight_closest(50, 50);
-    }
+        //shells.highlight_closest(50, 50);
+    };
 }

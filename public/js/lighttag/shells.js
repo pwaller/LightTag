@@ -14,6 +14,7 @@ circle_shape.arc(0, 0, INITIAL_SHELL_RADIUS, 0, Math.PI*2, false);
 
 
 var sphere_material = new THREE.MeshLambertMaterial({color: 0xFFFFFF});
+var sphere_geometry = new THREE.SphereGeometry(10, 2, 2);
 
 var circle_points = circle_shape.createPointsGeometry(N_CIRCLE_POINTS);
 
@@ -26,8 +27,7 @@ function Shell(shell_container, color, x, y, t) {
     this.expired = false;
     this.time = t;
 
-    var sphere = new THREE.Mesh(new THREE.SphereGeometry(10, 8, 8), sphere_material);
-    sphere.position.set(x, y, -100);
+    
     var show_sphere = false;
 
     this.view_x = 50;
