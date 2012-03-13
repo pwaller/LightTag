@@ -9,12 +9,7 @@ function getQueryString() {
   return result;
 }
 
-var debug = getQueryString()["debug"];
-var reload = getQueryString()["reload"];
-var testmass = getQueryString()["testmass"];
-
-//var myParam = getQueryString()["myParam"];
-
+var options = getQueryString();
 
 var players = {};
     
@@ -31,16 +26,18 @@ function Client(graphics) {
     var mycolor = parseInt($("input[name=color]:checked").val(), 16);
     var me = new_player(0, "me", mycolor);
     
-    if (testmass) {
-        var fake_player = new_player(1, 0x00FF22);
+    if (options.testmass) {
+        var fake_player = new_player(1, "testmass", 0x00FF22);
         fake_player.move([200, 200]);
         
         var t = 0;
         
         function wobble() {
             t++;
-            fake_player.move([300 + 100 * Math.sin(t / 20), 200+ 100 * Math.cos(t / 20)]);
-            window.setTimeout(wobble, 15);
+            speed = 1/80.;
+            fake_player.move([300 + 100 * Math.sin(t*speed), 
+                              200 + 100 * Math.cos(t*speed)]);
+            window.setTimeout(wobble, 1);
         }
         wobble();
     }
@@ -88,15 +85,17 @@ function Client(graphics) {
     });
 
     socket.on('player disconnected', function (who) {
+        console.log("Player disconnected", who);
         players[who].gone();
         delete players[who];
     });
     
     socket.on('disconnect', function () {
-        if (reload) {
+        console.log("Server disconnected");
+        if (options.reload) {
             window.setTimeout(function () {
                 window.location.reload();
-            }, 1000);
+            }, 500);
         }
     });
 
