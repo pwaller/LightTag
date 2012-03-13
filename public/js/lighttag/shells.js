@@ -46,8 +46,8 @@ function Shell(shell_container, color, x, y, t) {
         shell_container.remove(line);
         this.sphere_off();
     };
-    
-    this.update = function (elapsed_time, next_shell) {
+
+    this.update = function (elapsed_time, next_shell, prev_shell) {
         r = radius(elapsed_time);
         s = r/INITIAL_SHELL_RADIUS;
         this.line.scale.set(s, s, s);
@@ -57,24 +57,38 @@ function Shell(shell_container, color, x, y, t) {
         //                from multiple points.
         this_distance = this.distance(this.view_x, this.view_y, elapsed_time);
         has_arrived = (this_distance < 0);
-        if (!next_shell) {
-            if (has_arrived) 
-                this.sphere_on();
-            else
-                this.sphere_off();
-            return;
+
+        is_next_obsolete = false;
+        is_prev_obsolete = true;
+
+        if (next_shell) {
+            next_distance = next_shell.distance(this.view_x, this.view_y, elapsed_time);
+            is_next_obsolete = (next_distance < 0);
         }
-        next_distance = next_shell.distance(this.view_x, this.view_y, elapsed_time);
-        is_obsolete = (next_distance < 0);
+
+        if (prev_shell) {
+            prev_distance = prev_shell.distance(this.view_x, this.view_y, elapsed_time);
+            is_prev_obsolete = (prev_distance < 0);
+        }
 
         // TODO(pwaller): precompute shell termination length == longest path to corner
-        if (is_obsolete && r > DIAGONAL)
+        if (is_next_obsolete && is_prev_obsolete && r > DIAGONAL)
             this.expire();
 
-        if (has_arrived && !is_obsolete) {
-            f = - this_distance / (next_distance - this_distance);
-            new_x = (1-f)*x + f*next_shell.x;
-            new_y = (1-f)*y + f*next_shell.y;
+        if (has_arrived && !is_next_obsolete) {
+            if (next_shell) {
+                f = - this_distance / (next_distance - this_distance);
+                new_x = (1-f)*x + f*next_shell.x;
+                new_y = (1-f)*y + f*next_shell.y;
+            }
+            this.sphere_on();
+            this.sphere.position.set(new_x, new_y, -100);
+        } else if (has_arrived && !is_prev_obsolete) {
+            if (prev_shell) {
+                f = - this_distance / (prev_distance - this_distance);
+                new_x = (1-f)*x + f*prev_shell.x;
+                new_y = (1-f)*y + f*prev_shell.y;
+            }
             this.sphere_on();
             this.sphere.position.set(new_x, new_y, -100);
         } else {
@@ -138,12 +152,19 @@ function Shells(player, scene) {
     
     this.evolve = function (elapsed) {
         this.elapsed_time += elapsed
+        has_prev_shell = false;
         for (var i=0, len=this.shells.length; i < len; i++) {
-            if (i < len-1) {
-                this.shells[i].update(this.elapsed_time, this.shells[i+1]);
+            has_next_shell = (i < len-1);
+            if (has_next_shell && has_prev_shell) {
+                this.shells[i].update(this.elapsed_time, this.shells[i+1], this.shells[i-1]);
+            } else if (has_next_shell) {
+                this.shells[i].update(this.elapsed_time, this.shells[i+1], false);
+            } else if (has_prev_shell) {
+                this.shells[i].update(this.elapsed_time, false, this.shells[i-1]);
             } else {
                 this.shells[i].update(this.elapsed_time);
             }
+            has_prev_shell = true;
         }
         this.prune_dead_shells();
     };
