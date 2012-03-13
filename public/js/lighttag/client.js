@@ -16,20 +16,20 @@ var testmass = getQueryString()["testmass"];
 //var myParam = getQueryString()["myParam"];
 
 
+var players = {};
+    
 function Client(graphics) {
     var scene = graphics.scene,
         renderer_element = graphics.renderer_element;
 
-    var players = {};
-    function new_player(who, color) {
-        player = new Player(scene, who, color);
+    function new_player(id, name, color) {
+        player = new Player(scene, id, name, color);
         players[player.id] = player;
         return player;
     }
     
     var mycolor = parseInt($("input[name=color]:checked").val(), 16);
-    var me = new_player(0, mycolor);
-    //players[0] = me;
+    var me = new_player(0, "me", mycolor);
     
     if (testmass) {
         var fake_player = new_player(1, 0x00FF22);
@@ -63,7 +63,7 @@ function Client(graphics) {
     renderer_element
         .mousemove(function (e) {
             data = [e.pageX - renderer_element.offset().left, 
-            e.pageY - renderer_element.offset().top];
+                    e.pageY - renderer_element.offset().top];
             me.move(data);
             socket.emit("move", data);
         })
@@ -78,7 +78,7 @@ function Client(graphics) {
 
     socket.on('connected players', function (data) {
         for (who in data) {
-            new_player(data[who], 0xff0000)
+            new_player(data[who], "remote", 0xff0000)
         }
     });
 

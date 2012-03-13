@@ -1,6 +1,7 @@
 
+function Player(scene, id, name, color) {
+    console.log("New player: ", id, name, color);
 
-function Player(scene, id, color) {
     this.id = id;
     this.color = color;
     
