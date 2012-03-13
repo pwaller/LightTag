@@ -32,6 +32,8 @@ function Shell(shell_container, color, x, y, t) {
 
     this.view_x = 50;
     this.view_y = 50;
+    this.x = x;
+    this.y = y;
 
     function radius(time) {
         return (time - t) * LIGHTSPEED;
@@ -49,14 +51,27 @@ function Shell(shell_container, color, x, y, t) {
         s = r/INITIAL_SHELL_RADIUS;
         this.line.scale.set(s, s, s);
 
-        has_arrived = (this.distance(this.view_x, this.view_y, elapsed_time) < 0);
-        is_obsolete = (next_shell && (next_shell.distance(this.view_x, this.view_y, elapsed_time) < 0));
+        this_distance = this.distance(this.view_x, this.view_y, elapsed_time);
+        has_arrived = (this_distance < 0);
+        if (!next_shell) {
+            if (has_arrived) 
+                this.sphere_on();
+            else
+                this.sphere_off();
+            return;
+        }
+        next_distance = next_shell.distance(this.view_x, this.view_y, elapsed_time);
+        is_obsolete = (next_distance < 0);
 
         // TODO(pwaller): precompute shell termination length == longest path to corner
         if (is_obsolete && r > DIAGONAL)
             this.expire();
 
         if (has_arrived && !is_obsolete) {
+            f = - this_distance / (next_distance - this_distance);
+            new_x = (1-f)*x + f*next_shell.x;
+            new_y = (1-f)*y + f*next_shell.y;
+            sphere.position.set(new_x, new_y, -100);
             this.sphere_on();
         } else {
             this.sphere_off();
