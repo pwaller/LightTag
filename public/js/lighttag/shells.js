@@ -100,15 +100,18 @@ function Shell(shell_container, color, x, y, t) {
 
     this.sphere_on = function() {
         if (!show_sphere) {
+            var sphere_material = new THREE.MeshLambertMaterial({color: color});
+            this.sphere = new THREE.Mesh(sphere_geometry, sphere_material);
+            this.sphere.position.set(x, y, -100);
             show_sphere = true;
-            shell_container.add(sphere);
+            shell_container.add(this.sphere);
         }
     };
 
     this.sphere_off = function() {
         if (show_sphere) {
             show_sphere = false;
-            shell_container.remove(sphere);
+            shell_container.remove(this.sphere);
         }
     }
 }
