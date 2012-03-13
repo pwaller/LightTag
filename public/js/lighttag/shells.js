@@ -75,8 +75,8 @@ function Shell(shell_container, color, x, y, t) {
             f = - this_distance / (next_distance - this_distance);
             new_x = (1-f)*x + f*next_shell.x;
             new_y = (1-f)*y + f*next_shell.y;
-            sphere.position.set(new_x, new_y, -100);
             this.sphere_on();
+            this.sphere.position.set(new_x, new_y, -100);
         } else {
             this.sphere_off();
         }
