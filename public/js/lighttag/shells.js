@@ -150,7 +150,7 @@ function Shells(player, scene) {
     
     this.spawn = function (x, y) {
         //if (shells.length != 0) return;
-        this.shells.push(new Shell(id++, shell_container, player.color, x, y, this.elapsed_time));
+        this.shells.push(new Shell(shell_container, player.color, x, y, this.elapsed_time));
     };
     
     this.gone = function () {
