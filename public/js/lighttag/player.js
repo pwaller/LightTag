@@ -11,7 +11,9 @@ function Player(scene, id, name, color) {
     var sphere_material = new THREE.MeshLambertMaterial({color: color});
     var sphere = new THREE.Mesh(new THREE.SphereGeometry(10, 8, 8), sphere_material);
 
-    scene.add(sphere);
+    if (id == options.primary)
+        scene.add(sphere)
+
     this.gone = function () {
         console.log("Player gone: ", this);
         scene.remove(sphere);
