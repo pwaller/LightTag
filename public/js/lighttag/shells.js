@@ -154,19 +154,14 @@ function Shells(player, scene) {
     
     this.evolve = function (elapsed) {
         this.elapsed_time += elapsed
-        has_prev_shell = false;
+        prev_shell = false;
         for (var i=0, len=this.shells.length; i < len; i++) {
-            has_next_shell = (i < len-1);
-            if (has_next_shell && has_prev_shell) {
-                this.shells[i].update(this.elapsed_time, this.shells[i+1], this.shells[i-1]);
-            } else if (has_next_shell) {
-                this.shells[i].update(this.elapsed_time, this.shells[i+1], false);
-            } else if (has_prev_shell) {
-                this.shells[i].update(this.elapsed_time, false, this.shells[i-1]);
-            } else {
-                this.shells[i].update(this.elapsed_time);
-            }
-            has_prev_shell = true;
+            if (i < len-1)
+                next_shell = this.shells[i+1];
+            else
+                next_shell = false;
+            this.shells[i].update(this.elapsed_time, next_shell, prev_shell);
+            prev_shell = this.shells[i];
         }
         this.prune_dead_shells();
     };
