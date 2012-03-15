@@ -75,6 +75,8 @@ function Shell(shell_container, color, x, y, t) {
         if (is_next_obsolete && is_prev_obsolete && r > DIAGONAL)
             this.expire();
 
+        new_x = x;
+        new_y = y;
         if (has_arrived && !is_next_obsolete) {
             if (next_shell) {
                 f = - this_distance / (next_distance - this_distance);
