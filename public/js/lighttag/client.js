@@ -13,7 +13,7 @@ var options = getQueryString();
 
 var players = {};
     
-function Client(graphics) {
+function Client(myname, mycolor, graphics) {
     var scene = graphics.scene,
         renderer_element = graphics.renderer_element;
 
@@ -23,8 +23,7 @@ function Client(graphics) {
         return player;
     }
     
-    var mycolor = parseInt($("input[name=color]:checked").val(), 16);
-    var me = new_player(0, "me", mycolor);
+    var me = new_player(0, myname, mycolor);
     
     if (options.testmass) {
         var fake_player = new_player(1, "testmass", 0x00FF22);
@@ -71,11 +70,20 @@ function Client(graphics) {
 
     var socket = io.connect('http://' + window.document.domain);
 
-    socket.on('player connected', new_player);
+    socket.on('connect', function() {
+        socket.emit('player info', [myname, mycolor]);
+    });
+
+    socket.on('player connected', function(data) {
+        console.log("player connected", data);
+        new_player(data[0], data[1], data[2]);
+    });
 
     socket.on('connected players', function (data) {
+        console.log("connected players", data);
         for (who in data) {
-            new_player(data[who], "remote", 0xff0000)
+            player = data[who];
+            new_player(player[0], player[1], player[2])
         }
     });
 

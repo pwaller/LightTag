@@ -26,9 +26,11 @@ app.configure(function () {
     var players = {};
     
     // TODO(pwaller): Serialization of player name and colour.
-    function Player(socket) {
+    function Player(socket, name, color) {
         this.id = socket.id;
         this.socket = socket;
+        this.name = name;
+        this.color = color;
         this.x = 0;
         this.y = 0;
         this.move = function (data) {
@@ -52,16 +54,20 @@ app.configure(function () {
     });
 
     io.sockets.on('connection', function (socket) {
+    // The party doesn't begin until the player tells us who they are.
+    socket.on('player info', function(playerinfo) {
         
         var ps = [];
-        for (var key in players) ps.push(key);
+        for (var key in players) 
+            ps.push([key, players[key].name, players[key].color]);
+            
         socket.emit("connected players", ps);
         console.log("Connected: ", ps);
         
-        var player = new Player(socket);
+        var player = new Player(socket, playerinfo[0], playerinfo[1]);
         players[player.id] = player;
-        socket.broadcast.emit("player connected", player.id, "Name", 0xff0000);
-                
+        socket.broadcast.emit("player connected", [player.id, player.name, player.color]);
+        
         socket.on('move', function(data) {
             player.move(data);
             socket.broadcast.emit('position update', socket.id, data);
@@ -71,6 +77,8 @@ app.configure(function () {
             player.gone();
             socket.broadcast.emit('player disconnected', socket.id);
         });
-    });
+        
+    }); // socket .on 'player info'
+    }); // sockets.on connection
 });
 

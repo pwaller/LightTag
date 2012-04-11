@@ -23,14 +23,14 @@ div.content
                     input(name="color", type="radio", value="#{color}")
   
   .container.row
-    #ncirc 0
+    //#ncirc 0
     #players.span2
-      //div.alert.alert-info
-        h4 a
+      div#player-template.alert.alert-info(style="display: none")
+        h4#name a
         .progress.progress-success
           .bar(style="width: 50%")
     .span8  
-      div#container(style='text-align: center;')// border: 2px solid red;')
+      #container(style='text-align: center;')// border: 2px solid red;')
 
 footer
 
@@ -62,23 +62,20 @@ script
       // Prevent duplicate submission:
       $("input,button", this).prop("disabled", true);
       //$("#form").prop("disabled", true);
-      
-      var name = $("#name").val();
-      $("#players").append(
-        $("<div>").addClass("alert alert-info")
-          .append($("<div>").text("Le " + name))
-          .append($("<div>").addClass("progress progress-success")
-            .append($("<div>").addClass("bar").attr("style", "width: 20%")))
-      );
           
       $("#welcome").fadeOut();
       
       var graphics = new Graphics();
       graphics.renderer_element.hide().delay(500).fadeIn();
       
-      var client = new Client(graphics);
+      myname = $("#name", this).val();
+      mycolor = parseInt($("input[name=color]:checked").val(), 16);
+      var client = new Client(myname, mycolor, graphics);
     });
-    
+
+    if (options.name)
+      $("#name").val(options.name);
+          
     if (options.go)
       $("#form").submit();
   });
