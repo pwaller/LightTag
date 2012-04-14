@@ -70,7 +70,16 @@ function Client(myname, mycolor, graphics) {
 
     var socket = io.connect('http://' + window.document.domain);
 
+    function reset_players() {
+        for (player in players)
+            if (player != me.id)
+                players[player].gone()
+        players = {};
+        players[me.id] = me;
+    }
+
     socket.on('connect', function() {
+        reset_players();
         socket.emit('player info', [myname, mycolor]);
     });
 

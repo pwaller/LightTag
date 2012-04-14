@@ -15,9 +15,10 @@ function SidebarEntry(player) {
     
     $("#players").append(this.player_elem);
     $("#name", this.player_elem).text(player.name);
+    
     this.gone = function() {
         this.player_elem.remove();
-    }
+    };
 }
 
 function Player(scene, id, name, color) {
