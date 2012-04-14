@@ -176,25 +176,5 @@ function Shells(player, scene) {
             this.shells[i].expire();
         scene.remove(shell_container);
     };
-    
-    this.unhighlight = null;
-    this.highlighted = null;
-    
-    this.highlight_closest = function (x, y) {
-        if (this.shells.length == 0) return;
-        var shells_copy = this.shells.slice(0);
-        for (i in shells_copy)
-            shells_copy[i] = [Math.abs(shells_copy[i].distance(x, y)), shells_copy[i]];
-        
-        shells_copy.sort(function (l, r) { return l[0] > r [0]; });
-        //console.log(shells_copy[0][0], shells_copy[shells_copy.length - 1][0]);
-        closest_shell = shells_copy[0][1];
-        if (this.highlighted != closest_shell) {
-            if (this.highlighted)
-                this.highlighted.unhighlight();
-            this.highlighted = closest_shell;
-            closest_shell.highlight();
-        }
-    };
 }
 

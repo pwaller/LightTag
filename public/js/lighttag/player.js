@@ -58,6 +58,5 @@ function Player(scene, id, name, color) {
     
     this.tick = function (elapsed) {
         shells.evolve(elapsed);
-        //shells.highlight_closest(50, 50);
     };
 }
