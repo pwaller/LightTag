@@ -100,6 +100,14 @@ function Client(myname, mycolor, graphics) {
         player = players[who];
         player.move(where);
     });
+    
+    socket.on('tag', function (who) {
+        if (who == socket.socket.sessionid)
+            who = 0;
+        for (p in players)
+            players[p].is_it = p == who;
+        console.log("Player tagged! ", who);
+    });
 
     socket.on('player disconnected', function (who) {
         console.log("Player disconnected", who);

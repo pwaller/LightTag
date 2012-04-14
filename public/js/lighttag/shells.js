@@ -22,6 +22,10 @@ function Shell(shell_container, color, x, y, t) {
     var material = new THREE.LineBasicMaterial({color: color, linewidth: 1, opacity: 0.2})
     var line = this.line = new THREE.Line(circle_points, material);
     
+    var sphere_material = new THREE.MeshLambertMaterial({color: color});
+    this.sphere = new THREE.Mesh(sphere_geometry, sphere_material);
+    this.sphere.position.set(x, y, 0);
+            
     if (!options.hide_cones)
         shell_container.add(line);
 
@@ -47,10 +51,16 @@ function Shell(shell_container, color, x, y, t) {
         this.sphere_off();
     };
 
-    this.update = function (elapsed_time, next_shell, prev_shell) {
+    this.update = function (elapsed_time, next_shell, prev_shell, pulsate) {
         r = radius(elapsed_time);
         s = r/INITIAL_SHELL_RADIUS;
         this.line.scale.set(s, s, s);
+        if (pulsate) {
+            p = 2+0.5*Math.sin(elapsed_time/100);
+        } else {
+            p = 1;
+        }
+        this.sphere.scale.set(p, p, p);
 
         // TODO(pwaller): This needs to become part of an "observe" process.
         //                for a given set of light cones we may want to observe
@@ -116,9 +126,6 @@ function Shell(shell_container, color, x, y, t) {
 
     this.sphere_on = function() {
         if (!show_sphere) {
-            var sphere_material = new THREE.MeshLambertMaterial({color: color});
-            this.sphere = new THREE.Mesh(sphere_geometry, sphere_material);
-            this.sphere.position.set(x, y, -100);
             show_sphere = true;
             shell_container.add(this.sphere);
         }
@@ -160,7 +167,7 @@ function Shells(player, scene) {
                 next_shell = this.shells[i+1];
             else
                 next_shell = false;
-            this.shells[i].update(this.elapsed_time, next_shell, prev_shell);
+            this.shells[i].update(this.elapsed_time, next_shell, prev_shell, player.is_it);
             prev_shell = this.shells[i];
         }
         this.prune_dead_shells();

@@ -1,16 +1,11 @@
 express = require('express');
 
-/*
-aObject.prototype.keys = function ()
-{
-  var keys = [];
-  for(var i in this) if (this.hasOwnProperty(i))
-  {
-    keys.push(i);
-  }
-  return keys;
+TAG_DISTANCE_PX = 100;
+TAG_COOLOFF_MILLISECONDS = 5000;
+
+function hypot(a, b) {
+    return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
 }
-*/
 
 app = express.createServer();
 io = require('socket.io').listen(app);
@@ -39,6 +34,12 @@ app.configure(function () {
         this.gone = function () {
             delete players[this.id];
         };
+        this.distance_from = function (rhs) {
+            return hypot(this.x - rhs.x, this.y - rhs.y);
+        };
+        this.tag = function (rhs) {
+            
+        }
     }
 
     app.get('/', function (req, res) {
@@ -52,6 +53,8 @@ app.configure(function () {
         ]);
         res.render("home");
     });
+    
+    var tag_time = new Date();
 
     io.sockets.on('connection', function (socket) {
     // The party doesn't begin until the player tells us who they are.
@@ -71,6 +74,18 @@ app.configure(function () {
         socket.on('move', function(data) {
             player.move(data);
             socket.broadcast.emit('position update', socket.id, data);
+            for (p in players) {
+                if (p == player.id) continue;
+                if (player.distance_from(players[p]) < TAG_DISTANCE_PX
+                    && (new Date() - tag_time) > TAG_COOLOFF_MILLISECONDS) {
+                    
+                    player.tag(players[p])
+                    tag_time = new Date();
+                    socket.broadcast.emit('tag', p);
+                    socket.emit('tag', p);
+                }
+            }
+            
         });
         
         socket.on('disconnect', function() {

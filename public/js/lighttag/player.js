@@ -25,6 +25,7 @@ function Player(scene, id, name, color) {
     console.log("New player: ", id, name, color);
 
     this.id = id;
+    this.is_it = false;
     this.color = color;
     this.name = name;
     
