@@ -34,9 +34,9 @@ function Graphics() {
         var pointLight = new THREE.PointLight(0xFFFFFF);
         pointLight.position.x = WIDTH / 2;
         pointLight.position.y = HEIGHT / 2;
-        pointLight.position.z = -130;
+        pointLight.position.z = -200;
         scene.add(pointLight);    
-        scene.add(new THREE.AmbientLight(0x000f00));
+        scene.add(new THREE.AmbientLight(0x111111));
     }
         
     function animate() {

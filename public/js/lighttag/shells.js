@@ -29,7 +29,7 @@ function Shell(shell_container, color, x, y, t) {
     if (!options.hide_cones)
         shell_container.add(line);
 
-    line.position.set(x, y, -100);
+    line.position.set(x, y, -200);
     this.expired = false;
     this.time = t;
 
@@ -54,7 +54,7 @@ function Shell(shell_container, color, x, y, t) {
     this.update = function (elapsed_time, next_shell, prev_shell, pulsate) {
         r = radius(elapsed_time);
         s = r/INITIAL_SHELL_RADIUS;
-        this.line.scale.set(s, s, s);
+        this.line.scale.set(s, s, 1);
         if (pulsate) {
             p = 2+0.5*Math.sin(elapsed_time/100);
         } else {
@@ -95,6 +95,7 @@ function Shell(shell_container, color, x, y, t) {
             }
             this.sphere_on();
             this.sphere.position.set(new_x, new_y, -100);
+            
         } else if (has_arrived && !is_prev_obsolete) {
             if (prev_shell) {
                 f = - this_distance / (prev_distance - this_distance);
@@ -103,6 +104,7 @@ function Shell(shell_container, color, x, y, t) {
             }
             this.sphere_on();
             this.sphere.position.set(new_x, new_y, -100);
+            
         } else {
             this.sphere_off();
         }
@@ -112,16 +114,6 @@ function Shell(shell_container, color, x, y, t) {
     // Negative means we're inside the shell
     this.distance = function (testx, testy, time) {
         return hypot(testx - x, testy - y) - radius(time);
-    };
-    
-    this.highlight = function () {
-        material.opacity = 1;
-        material.linewidth = 5;
-    };
-    
-    this.unhighlight = function () {
-        material.opacity = 0.2;
-        material.linewidth = 1;
     };
 
     this.sphere_on = function() {
@@ -146,9 +138,8 @@ function Shells(player, scene) {
     
     shell_container = new THREE.Object3D();
     scene.add(shell_container);
-            
-    //var shells = [];
-    this.shells = []; //shells;
+    
+    this.shells = [];
     
     this.prune_dead_shells = function () {
         not_expired = []
@@ -174,8 +165,8 @@ function Shells(player, scene) {
     };
     
     this.spawn = function (x, y) {
-        //if (shells.length != 0) return;
-        this.shells.push(new Shell(shell_container, player.color, x, y, this.elapsed_time));
+        s = new Shell(shell_container, player.color, x, y, this.elapsed_time);
+        this.shells.push(s);
     };
     
     this.gone = function () {
